@@ -157,29 +157,8 @@ def parse_listing_page(html: str, url: str) -> Dict:
     Returns:
         Dictionnaire avec toutes les données extraites
     """
-    # #region agent log
-    import json
-    log_data = {"url": url, "html_length": len(html)}
-    with open("/home/bechir/Documents/immobilier-price-prediction/.cursor/debug.log", "a", encoding="utf-8") as f:
-        f.write(json.dumps({"location": "voursa.py:160", "message": "parse_listing_page entry", "data": log_data, "timestamp": __import__("time").time() * 1000, "hypothesisId": "A"}) + "\n")
-    # #endregion
-    
     soup = BeautifulSoup(html, 'lxml')
-    
-    # #region agent log
-    # Vérifier si JSON-LD est présent
     json_ld_scripts = soup.find_all('script', type='application/ld+json')
-    log_data = {"json_ld_count": len(json_ld_scripts), "has_json_ld": len(json_ld_scripts) > 0}
-    if json_ld_scripts:
-        try:
-            json_content = json.loads(json_ld_scripts[0].string) if json_ld_scripts[0].string else None
-            log_data["json_ld_type"] = json_content.get("@type") if json_content else None
-            log_data["json_ld_category"] = json_content.get("category") if json_content else None
-        except:
-            log_data["json_ld_parse_error"] = True
-    with open("/home/bechir/Documents/immobilier-price-prediction/.cursor/debug.log", "a", encoding="utf-8") as f:
-        f.write(json.dumps({"location": "voursa.py:165", "message": "JSON-LD detection", "data": log_data, "timestamp": __import__("time").time() * 1000, "hypothesisId": "A"}) + "\n")
-    # #endregion
     
     data = {
         'titre': None,
@@ -200,15 +179,9 @@ def parse_listing_page(html: str, url: str) -> Dict:
     }
     
     # Titre (généralement dans un h1 ou h2)
-    # #region agent log
     titre_elem = soup.find(['h1', 'h2', 'h3'], class_=re.compile(r'title|heading', re.I))
     if not titre_elem:
         titre_elem = soup.find('title')
-    titre_raw = titre_elem.get_text() if titre_elem else None
-    log_data = {"titre_raw": titre_raw[:100] if titre_raw else None, "titre_source": "h1/h2/h3" if soup.find(['h1', 'h2', 'h3'], class_=re.compile(r'title|heading', re.I)) else "title_tag"}
-    with open("/home/bechir/Documents/immobilier-price-prediction/.cursor/debug.log", "a", encoding="utf-8") as f:
-        f.write(json.dumps({"location": "voursa.py:181", "message": "Titre extraction", "data": log_data, "timestamp": __import__("time").time() * 1000, "hypothesisId": "C"}) + "\n")
-    # #endregion
     if titre_elem:
         titre_text = clean_text(titre_elem.get_text())
         # Supprimer le préfixe "Voursa.com | " si présent
@@ -239,31 +212,23 @@ def parse_listing_page(html: str, url: str) -> Dict:
             data['prix'] = extract_price_mru(prix_text)
     
     # Type de bien - Utiliser JSON-LD si disponible (plus fiable)
-    # #region agent log
+    import json as _json
     json_ld_category = None
     if json_ld_scripts and json_ld_scripts[0].string:
         try:
-            json_content = json.loads(json_ld_scripts[0].string)
+            json_content = _json.loads(json_ld_scripts[0].string)
             json_ld_category = json_content.get("category")
         except:
             pass
     
     # Sinon, chercher dans le HTML (exclure les balises script)
     type_elem = None
-    type_parent_name = None
     if not json_ld_category:
         for elem in soup.find_all(string=re.compile(r'(Immobilier résidentiel|Terrain|Bureau|Entrepôt|Boutique|Immobilier commercial)')):
-            # Ignorer le contenu des balises script
             parent = elem.parent if hasattr(elem, 'parent') else None
             if parent and parent.name != 'script':
                 type_elem = elem
-                type_parent_name = parent.name
                 break
-    
-    log_data = {"json_ld_category": json_ld_category, "type_elem_found": type_elem is not None, "type_elem_parent": type_parent_name, "type_elem_text": clean_text(type_elem.strip())[:50] if type_elem else None}
-    with open("/home/bechir/Documents/immobilier-price-prediction/.cursor/debug.log", "a", encoding="utf-8") as f:
-        f.write(json.dumps({"location": "voursa.py:194", "message": "Type bien extraction", "data": log_data, "timestamp": __import__("time").time() * 1000, "hypothesisId": "A"}) + "\n")
-    # #endregion
     
     # Priorité au JSON-LD, sinon HTML
     if json_ld_category:
@@ -284,11 +249,10 @@ def parse_listing_page(html: str, url: str) -> Dict:
         data['type_annonce'] = 'Vente'
     
     # Description - Utiliser JSON-LD si disponible, sinon HTML
-    # #region agent log
     json_ld_description = None
     if json_ld_scripts and json_ld_scripts[0].string:
         try:
-            json_content = json.loads(json_ld_scripts[0].string)
+            json_content = _json.loads(json_ld_scripts[0].string)
             json_ld_description = json_content.get("description")
         except:
             pass
@@ -296,30 +260,18 @@ def parse_listing_page(html: str, url: str) -> Dict:
     # Sinon, chercher dans le HTML (exclure les scripts et JSON)
     desc_elem = None
     if not json_ld_description:
-        # Chercher dans les divs avec classes spécifiques
         for elem in soup.find_all(['div', 'p', 'section'], class_=re.compile(r'description|content|text|details', re.I)):
-            if elem.name != 'script' and not (elem.find_parent('script')):
+            if not elem.find_parent('script'):
                 text = elem.get_text().strip()
-                # Ignorer les textes trop courts ou génériques
                 if text and len(text) > 20 and text.lower() not in ['accueil', 'home', 'description']:
                     desc_elem = elem
                     break
         
-        # Si pas trouvé, chercher tous les paragraphes et prendre le plus long (mais pas "Accueil")
         if not desc_elem:
-            paragraphs = [p for p in soup.find_all('p') if p.name != 'script' and not p.find_parent('script')]
-            if paragraphs:
-                # Filtrer les paragraphes trop courts ou génériques
-                valid_paras = [p for p in paragraphs if len(p.get_text().strip()) > 20 and p.get_text().strip().lower() not in ['accueil', 'home']]
-                if valid_paras:
-                    longest = max(valid_paras, key=lambda p: len(p.get_text()))
-                    desc_elem = longest
-    
-    desc_raw = json_ld_description or (desc_elem.get_text() if desc_elem else None)
-    log_data = {"json_ld_desc": bool(json_ld_description), "desc_found": desc_raw is not None, "desc_length": len(desc_raw) if desc_raw else 0, "desc_preview": desc_raw[:100] if desc_raw else None, "has_phone": bool(re.search(r'\d{8,9}', desc_raw or ''))}
-    with open("/home/bechir/Documents/immobilier-price-prediction/.cursor/debug.log", "a", encoding="utf-8") as f:
-        f.write(json.dumps({"location": "voursa.py:211", "message": "Description extraction", "data": log_data, "timestamp": __import__("time").time() * 1000, "hypothesisId": "D"}) + "\n")
-    # #endregion
+            paragraphs = [p for p in soup.find_all('p') if not p.find_parent('script')]
+            valid_paras = [p for p in paragraphs if len(p.get_text().strip()) > 20 and p.get_text().strip().lower() not in ['accueil', 'home']]
+            if valid_paras:
+                desc_elem = max(valid_paras, key=lambda p: len(p.get_text()))
     
     if json_ld_description:
         data['description'] = anonymize_phone(clean_text(json_ld_description))
@@ -383,12 +335,6 @@ def parse_listing_page(html: str, url: str) -> Dict:
     
     if caracteristiques:
         data['caracteristiques'] = ' | '.join(caracteristiques)
-    
-    # #region agent log
-    log_data = {"titre": data['titre'][:50] if data['titre'] else None, "type_bien": data['type_bien'][:50] if data['type_bien'] else None, "has_json_in_type": bool(data['type_bien'] and '@context' in str(data['type_bien'])) if data['type_bien'] else False}
-    with open("/home/bechir/Documents/immobilier-price-prediction/.cursor/debug.log", "a", encoding="utf-8") as f:
-        f.write(json.dumps({"location": "voursa.py:279", "message": "parse_listing_page exit", "data": log_data, "timestamp": __import__("time").time() * 1000, "hypothesisId": "A"}) + "\n")
-    # #endregion
     
     return data
 

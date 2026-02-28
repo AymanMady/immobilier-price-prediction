@@ -90,12 +90,6 @@ def anonymize_phone(text: Optional[str]) -> Optional[str]:
     Returns:
         Texte avec numéros supprimés/anonymisés ou None
     """
-    # #region agent log
-    import json
-    import time
-    log_data = {"input_length": len(text) if text else 0, "input_preview": text[:100] if text else None}
-    # #endregion
-    
     if text is None:
         return None
     
@@ -107,18 +101,8 @@ def anonymize_phone(text: Optional[str]) -> Optional[str]:
     ]
     
     result = str(text)
-    phones_found = []
     for pattern in patterns:
-        matches = re.findall(pattern, result)
-        if matches:
-            phones_found.extend(matches)
         result = re.sub(pattern, '[TÉLÉPHONE SUPPRIMÉ]', result)
-    
-    # #region agent log
-    log_data.update({"phones_found": phones_found, "phones_count": len(phones_found), "output_preview": result[:100] if result else None, "still_has_phones": bool(re.search(r'\b\d{8,9}\b', result))})
-    with open("/home/bechir/Documents/immobilier-price-prediction/.cursor/debug.log", "a", encoding="utf-8") as f:
-        f.write(json.dumps({"location": "common.py:anonymize_phone", "message": "Phone anonymization", "data": log_data, "timestamp": time.time() * 1000, "hypothesisId": "B"}) + "\n")
-    # #endregion
     
     return result if result else None
 
