@@ -34,6 +34,7 @@ ENV/
 data/raw/*.csv
 data/raw/*.json
 !data/raw/.gitkeep
+!data/raw/raw_data.csv
 
 # IDE
 .vscode/

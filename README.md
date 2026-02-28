@@ -1,63 +1,73 @@
 # Projet Prédiction Prix Immobilier - Mauritanie
 
-## Phase 1 : Scraping
+Ce projet vise à collecter des données d'annonces immobilières depuis plusieurs sources mauritaniennes pour construire un modèle de prédiction de prix (Machine Learning).
 
-Ce projet vise à collecter des données d'annonces immobilières depuis plusieurs sources mauritaniennes pour construire un modèle de prédiction de prix.
+## 🚀 État Actuel : Phase 1 - Collecte de Données (Scraping)
 
-### Sources de données
-- Voursa.com (https://voursa.com/FR/categories/real_estate)
+Nous avons implémenté un collecteur performant pour le site **Voursa.com**. Contrairement au parsing HTML classique, nous utilisons l'API JSON interne du site pour obtenir toutes les données structurées, y compris les détails techniques (chambres, salons, salles de bain).
 
-### Structure du projet
+### ✅ Accomplissements
+- Collecte de **500 annonces** complètes.
+- Extraction des détails profonds : nombre de chambres, salles de bain, salons.
+- Nettoyage automatique : Anonymisation des numéros de téléphone dans les descriptions.
+- Export structuré : Fichier au format CSV compatible Excel.
+
+### 📂 Structure du projet
 
 ```
 immobilier-price-prediction/
 ├── data/
 │   └── raw/
-│       └── raw_data.csv          # Données brutes scrapées
-├── notebooks/
-│   └── 01_scraping.ipynb         # Notebook principal de scraping
+│       └── raw_data.csv          # 500 annonces brutes scrapées
 ├── src/
 │   └── scraping/
-│       ├── __init__.py
-│       ├── common.py             # Fonctions communes
-│       └── voursa.py             # Scraper Voursa
+│       ├── common.py             # Fonctions utilitaires (nettoyage, requêtes)
+│       └── voursa.py             # Logique originale BeautifulSoup
+├── scrape_api.py                 # SCRIPT PRINCIPAL : Scraper API JSON optimisé
 ├── requirements.txt
+├── .gitignore                    # Configuré pour inclure raw_data.csv
 └── README.md
 ```
 
-### Installation
+## 🛠 Installation
+
+1.  Clonez le dépôt.
+2.  Créez et activez votre environnement virtuel :
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+3.  Installez les dépendances :
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+## 📈 Utilisation
+
+### Exécuter le Scraping Final
+Pour mettre à jour les données ou collecter de nouvelles annonces :
 
 ```bash
-pip install -r requirements.txt
+python3 scrape_api.py
 ```
+*Le script est configuré pour collecter jusqu'à 500 annonces avec une pause de 1 seconde entre les requêtes de détail pour respecter le serveur.*
 
-### Utilisation
+## 📊 Format des Données (raw_data.csv)
 
-#### Option 1: Via le notebook Jupyter
+Les champs suivants sont collectés :
+- **titre** : Nom de l'annonce.
+- **type_bien** : Appartement, Villa, Terrain, etc.
+- **prix** : En MRU (converti en float).
+- **surface_m2** : Superficie en m².
+- **nb_chambres / nb_salons / nb_sdb** : Détails techniques (si disponibles).
+- **ville / quartier** : Localisation précise.
+- **description** : Texte complet (anonymisé).
+- **caracteristiques** : Liste des équipements (Garage, Sécurité, etc.).
+- **source / url_annonce** : Origine des données pour vérification.
 
-Ouvrir le notebook `notebooks/01_scraping.ipynb` et exécuter les cellules dans l'ordre pour scraper les données.
+## 🛡 Respect des Bonnes Pratiques
 
-#### Option 2: Via le script Python
-
-```bash
-python3 run_scraping.py
-```
-
-Le script va scraper jusqu'à 500 annonces (modifiable dans le code) et sauvegarder les résultats dans `data/raw/raw_data.csv`.
-
-#### Option 3: Via le module Python
-
-```python
-from src.scraping.voursa import scrape_voursa
-from src.scraping.common import save_raw
-
-listings = scrape_voursa(max_listings=200)
-save_raw(listings, "data/raw/raw_data.csv")
-```
-
-### Respect des bonnes pratiques
-
-- Respect de robots.txt
-- Pause de 2+ secondes entre requêtes
-- User-Agent clair et identifié
-- Anonymisation des numéros de téléphone
+- **Politesse :** Délai entre les requêtes pour ne pas surcharger le serveur.
+- **Identification :** User-Agent personnalisé.
+- **Confidentialité :** Suppression automatique de tout numéro de téléphone détecté dans les textes libres.
+- **Maintenance :** Utilisation de l'API interne pour une meilleure stabilité face aux changements de design.

@@ -33,7 +33,7 @@ SLEEP_PAGE      = 2.0
 SLEEP_DETAIL    = 1.0   # On peut descendre un peu si ça ne bloque pas
 MAX_THREADS     = 1     # Séquentiel pour être poli
 
-OUTPUT_CSV = Path("data/raw/voursa_listings.csv")
+OUTPUT_CSV = Path("data/raw/raw_data.csv")
 
 # ─────────────────────────────────────────
 # Utilitaires
