@@ -7,8 +7,9 @@ Ce projet vise à collecter des données d'annonces immobilières depuis plusieu
 Nous avons implémenté un collecteur performant pour le site **Voursa.com**. Contrairement au parsing HTML classique, nous utilisons l'API JSON interne du site pour obtenir toutes les données structurées, y compris les détails techniques (chambres, salons, salles de bain).
 
 ### ✅ Accomplissements
-- Collecte de **500 annonces** complètes.
+- Collecte de **5000+ annonces** complètes (objectif en cours).
 - Extraction des détails profonds : nombre de chambres, salles de bain, salons.
+- Détection intelligente du type de transaction (Vente/Location).
 - Nettoyage automatique : Anonymisation des numéros de téléphone dans les descriptions.
 - Export structuré : Fichier au format CSV compatible Excel.
 
@@ -18,7 +19,7 @@ Nous avons implémenté un collecteur performant pour le site **Voursa.com**. Co
 immobilier-price-prediction/
 ├── data/
 │   └── raw/
-│       └── raw_data.csv          # 500 annonces brutes scrapées
+│       └── raw_data.csv          # 5000+ annonces brutes scrapées
 ├── src/
 │   └── scraping/
 │       ├── common.py             # Fonctions utilitaires (nettoyage, requêtes)

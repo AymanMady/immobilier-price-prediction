@@ -27,7 +27,7 @@ HEADERS = {
     "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
 }
 
-MAX_LISTINGS    = 500   # Objectif final
+MAX_LISTINGS    = 5200   # Objectif : plus de 5000 lignes
 PAGE_SIZE       = 50
 SLEEP_PAGE      = 2.0
 SLEEP_DETAIL    = 1.0   # On peut descendre un peu si ça ne bloque pas
@@ -76,13 +76,26 @@ def get_from_list(items, icon_name):
             return item.get("value")
     return None
 
-def determine_transaction(subcat):
-    """Déduit si c'est Vente ou Location."""
-    if not subcat: return "Vente"
-    s = subcat.lower()
-    if any(k in s for k in ["rent", "location", "louer"]):
-        return "Location"
-    return "Vente"
+def determine_transaction(item_obj, subcat_name):
+    """Déduit si c'est Vente ou Location à partir de plusieurs sources."""
+    # 1. Vérifier le nom de la sous-catégorie
+    if subcat_name:
+        s = subcat_name.lower()
+        if any(k in s for k in ["rent", "location", "louer", "اجار", "للايجار"]):
+            return "Location"
+    
+    # 2. Vérifier les flags dans l'objet (si présents)
+    for_sale = item_obj.get("forSale")
+    if for_sale is False: return "Location"
+    if for_sale is True: return "Vente"
+    
+    transaction_type = item_obj.get("transactionType")
+    if transaction_type:
+        t = str(transaction_type).lower()
+        if "rent" in t or "location" in t: return "Location"
+        if "sale" in t or "vente" in t: return "Vente"
+
+    return "Vente"  # Par défaut
 
 # ─────────────────────────────────────────
 # Logique de Scraping
@@ -111,7 +124,7 @@ def parse_ad_data(ad_list_obj):
     return {
         "titre": clean(ad_list_obj.get("title")),
         "type_bien": subcat,
-        "type_annonce": determine_transaction(subcat),
+        "type_annonce": determine_transaction(ad_list_obj, subcat),
         "prix": safe_float(ad_list_obj.get("price")),
         "surface_m2": surface,
         "nb_chambres": None,
@@ -150,6 +163,11 @@ def update_with_details(session, current_data):
         current_data["nb_chambres"] = safe_int(get_from_list(tech_details, "ROOMS_ATTRIBUTE_KEY"))
         current_data["nb_sdb"] = safe_int(get_from_list(tech_details, "BATHROOMS_ATTRIBUTE_KEY"))
         current_data["nb_salons"] = safe_int(get_from_list(tech_details, "HALLS_ATTRIBUTE_KEY"))
+        
+        # Affinement du type d'annonce via les détails techniques
+        rent_type = get_from_list(tech_details, "RENT_TYPE_ATTRIBUTE_KEY")
+        if rent_type or detail_data.get("rentType"):
+            current_data["type_annonce"] = "Location"
         
         # Features
         features = detail_data.get("features", [])
