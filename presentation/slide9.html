@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Conclusion et Perspectives</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Lora:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    body { margin: 0; padding: 0; background-color: #f0f0f0; font-family: 'Montserrat', sans-serif; overflow: hidden; }
+    .slide-container { width: 100vw; height: 100vh; background-color: #1A3A6B; position: relative; overflow: hidden; display: flex; flex-direction: column; color: white; }
+    .circle-decor { position: absolute; border-radius: 50%; opacity: 0.1; z-index: 0; }
+    .circle-1 { width: 600px; height: 600px; background-color: #60A5FA; top: -200px; right: -200px; }
+    .circle-2 { width: 400px; height: 400px; background-color: #F59E0B; bottom: -150px; left: -150px; }
+    .header-section { padding: 40px 60px 15px 60px; text-align: center; position: relative; z-index: 10; }
+    .header-title { font-size: 42px; font-weight: 700; margin: 0 0 10px 0; letter-spacing: 1px; text-transform: uppercase; }
+    .header-subtitle { font-size: 18px; font-weight: 300; opacity: 0.8; font-family: 'Lora', serif; font-style: italic; }
+    .divider { width: 80px; height: 4px; background-color: #F59E0B; margin: 18px auto; border-radius: 2px; }
+    .content-wrapper { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 15px 80px; position: relative; z-index: 10; }
+    .cards-container { display: flex; justify-content: center; gap: 35px; margin-bottom: 35px; }
+    .achievement-card { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; padding: 28px 25px; width: 300px; text-align: center; transition: transform 0.3s ease, background-color 0.3s ease; display: flex; flex-direction: column; align-items: center; }
+    .achievement-card:hover { transform: translateY(-10px); background-color: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.4); }
+    .icon-circle { width: 65px; height: 65px; border-radius: 50%; background-color: white; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .card-icon { font-size: 28px; }
+    .text-blue { color: #1A3A6B; }
+    .text-green { color: #059669; }
+    .text-amber { color: #D97706; }
+    .text-purple { color: #7C3AED; }
+    .card-title { font-size: 17px; font-weight: 700; margin: 0 0 12px 0; line-height: 1.3; }
+    .card-desc { font-size: 13px; font-weight: 300; line-height: 1.5; opacity: 0.9; margin: 0; }
+    /* Limits + Perspectives */
+    .bottom-section { display: flex; gap: 25px; margin-bottom: 30px; }
+    .limits-box { flex: 1; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 14px; padding: 18px 22px; }
+    .perspectives-box { flex: 1; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 18px 22px; }
+    .box-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px; }
+    .box-title-red { color: #FCA5A5; }
+    .box-title-green { color: #6EE7B7; }
+    .box-list { list-style: none; padding: 0; margin: 0; }
+    .box-list li { font-size: 13px; padding: 5px 0; opacity: 0.9; display: flex; align-items: center; gap: 8px; }
+    .box-list li i { font-size: 10px; flex-shrink: 0; }
+    .limits-box .box-list li i { color: #FCA5A5; }
+    .perspectives-box .box-list li i { color: #6EE7B7; }
+    /* Thank You */
+    .thank-you-section { text-align: center; margin-top: auto; margin-bottom: 15px; }
+    .thank-you-text { font-family: 'Lora', serif; font-size: 34px; font-style: italic; font-weight: 600; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3); margin: 0; }
+    .contact-info { font-size: 14px; margin-top: 10px; opacity: 0.7; display: flex; justify-content: center; gap: 25px; }
+    .contact-item { display: flex; align-items: center; }
+    .contact-item i { margin-right: 8px; }
+    .footer-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background-color: #F59E0B; }
+    .nav-buttons { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 15px; z-index: 1000; }
+    .nav-btn { width: 50px; height: 50px; background-color: rgba(26, 58, 107, 0.9); color: white; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); }
+    .nav-btn:hover { background-color: rgba(26, 58, 107, 1); transform: scale(1.1); }
+    .slide-indicator { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background-color: rgba(0, 0, 0, 0.5); color: white; padding: 8px 20px; border-radius: 20px; font-size: 14px; z-index: 1000; }
+</style>
+</head>
+<body>
+<div class="slide-container">
+<div class="circle-decor circle-1"></div>
+<div class="circle-decor circle-2"></div>
+<div class="header-section">
+    <h1 class="header-title">Conclusion</h1>
+    <p class="header-subtitle">Vers un marché immobilier plus transparent en Mauritanie</p>
+    <div class="divider"></div>
+</div>
+<div class="content-wrapper">
+    <!-- Achievement Cards -->
+    <div class="cards-container">
+        <div class="achievement-card">
+            <div class="icon-circle text-blue">
+                <i class="fas fa-database card-icon"></i>
+            </div>
+            <h3 class="card-title">Dataset Inédit</h3>
+            <p class="card-desc">Premier dataset immobilier structuré de Nouakchott : 1 153 annonces enrichies géographiquement.</p>
+        </div>
+        <div class="achievement-card">
+            <div class="icon-circle text-green">
+                <i class="fas fa-chart-line card-icon"></i>
+            </div>
+            <h3 class="card-title">R² = 0.84</h3>
+            <p class="card-desc">XGBoost atteint 84% de variance expliquée avec une MAE de 780K MRU sur les prédictions.</p>
+        </div>
+        <div class="achievement-card">
+            <div class="icon-circle text-amber">
+                <i class="fas fa-lightbulb card-icon"></i>
+            </div>
+            <h3 class="card-title">Insights Marché</h3>
+            <p class="card-desc">Quartier, surface et type de bien : les 3 déterminants majeurs des prix à Nouakchott.</p>
+        </div>
+        <div class="achievement-card">
+            <div class="icon-circle text-purple">
+                <i class="fas fa-cogs card-icon"></i>
+            </div>
+            <h3 class="card-title">Pipeline Complet</h3>
+            <p class="card-desc">De la collecte au modèle déployé : un pipeline end-to-end reproductible.</p>
+        </div>
+    </div>
+
+    <!-- Limits & Perspectives -->
+    <div class="bottom-section">
+        <div class="limits-box">
+            <h4 class="box-title box-title-red"><i class="fas fa-exclamation-circle"></i> Limites</h4>
+            <ul class="box-list">
+                <li><i class="fas fa-circle"></i> Dataset limité à une seule source (Voursa.com)</li>
+                <li><i class="fas fa-circle"></i> Valeurs manquantes sur surface et pièces (~15%)</li>
+                <li><i class="fas fa-circle"></i> Pas de données temporelles (évolution des prix)</li>
+                <li><i class="fas fa-circle"></i> Géocodage imprécis pour certains quartiers périphériques</li>
+            </ul>
+        </div>
+        <div class="perspectives-box">
+            <h4 class="box-title box-title-green"><i class="fas fa-rocket"></i> Améliorations Futures</h4>
+            <ul class="box-list">
+                <li><i class="fas fa-circle"></i> Multi-sources : ajouter d'autres plateformes immobilières</li>
+                <li><i class="fas fa-circle"></i> Application web Streamlit pour les agents immobiliers</li>
+                <li><i class="fas fa-circle"></i> Données satellites (images) pour enrichir les features</li>
+                <li><i class="fas fa-circle"></i> Suivi temporel des prix (time series forecasting)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Thank You -->
+    <div class="thank-you-section">
+        <p class="thank-you-text">Merci de votre attention</p>
+        <div class="contact-info">
+            <div class="contact-item"><i class="fas fa-envelope"></i> bechir.mady@supnum.mr</div>
+            <div class="contact-item"><i class="fab fa-github"></i> github.com/bechir</div>
+        </div>
+    </div>
+</div>
+<div class="footer-line"></div>
+<div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='slide8.html'" title="Précédent"><i class="fas fa-arrow-left"></i></button>
+</div>
+<div class="slide-indicator">9 / 9</div>
+</div>
+<script>
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') window.location.href = 'slide8.html';
+});
+</script>
+</body>
+</html>

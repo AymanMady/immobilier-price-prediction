@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Architecture du Projet</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;family=Lora:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    body { margin: 0; padding: 0; background-color: #f0f0f0; font-family: 'Montserrat', sans-serif; overflow: hidden; }
+    .slide-container { width: 100vw; height: 100vh; background-color: #ffffff; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+    .header-bar { background-color: #1A3A6B; height: 80px; display: flex; align-items: center; padding: 0 40px; position: relative; z-index: 10; flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header-title { color: white; font-size: 32px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .header-accent { position: absolute; bottom: 0; left: 0; height: 4px; width: 100%; background-color: #60A5FA; }
+    .content-wrapper { flex: 1; padding: 30px 50px; background-color: #F8FAFC; display: flex; flex-direction: column; gap: 25px; position: relative; }
+    .bg-pattern { position: absolute; bottom: -50px; right: -50px; width: 300px; height: 300px; background-color: #E2E8F0; border-radius: 50%; opacity: 0.4; z-index: 0; pointer-events: none; }
+
+    /* Architecture Flow */
+    .arch-flow { display: flex; align-items: stretch; justify-content: center; gap: 0; position: relative; z-index: 1; margin-bottom: 10px; }
+    .arch-step { flex: 1; max-width: 220px; background: white; border-radius: 14px; padding: 20px 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); border: 1px solid #E2E8F0; display: flex; flex-direction: column; align-items: center; text-align: center; transition: transform 0.2s; position: relative; }
+    .arch-step:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+    .arch-step-icon { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 12px; }
+    .step-collect .arch-step-icon { background: #DBEAFE; color: #1A3A6B; }
+    .step-clean .arch-step-icon { background: #FEF3C7; color: #92400E; }
+    .step-eda .arch-step-icon { background: #EDE9FE; color: #5B21B6; }
+    .step-model .arch-step-icon { background: #D1FAE5; color: #065F46; }
+    .step-deploy .arch-step-icon { background: #FEE2E2; color: #991B1B; }
+    .arch-step-title { font-size: 14px; font-weight: 700; color: #1A3A6B; margin-bottom: 8px; text-transform: uppercase; }
+    .arch-step-desc { font-size: 12px; color: #6B7280; line-height: 1.4; margin: 0; }
+    .arch-arrow { display: flex; align-items: center; justify-content: center; color: #CBD5E1; font-size: 22px; flex-shrink: 0; width: 30px; }
+
+    /* Tech Stack */
+    .tech-section { display: flex; gap: 25px; position: relative; z-index: 1; }
+    .tech-card { flex: 1; background: white; border-radius: 14px; padding: 20px 25px; box-shadow: 0 3px 8px rgba(0,0,0,0.05); border: 1px solid #E2E8F0; }
+    .tech-title { font-size: 14px; font-weight: 700; color: #1A3A6B; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px; text-transform: uppercase; border-bottom: 2px solid #F3F4F6; padding-bottom: 8px; }
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tech-tag { display: flex; align-items: center; gap: 6px; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #374151; transition: background 0.2s; }
+    .tech-tag:hover { background: #EFF6FF; border-color: #60A5FA; }
+    .tech-tag i { color: #3B82F6; font-size: 14px; }
+
+    /* Project Structure */
+    .structure-card { flex: 0 0 320px; background: #1A3A6B; border-radius: 14px; padding: 20px 25px; color: white; font-family: 'Courier New', monospace; }
+    .structure-card .tech-title { color: #93C5FD; border-bottom-color: rgba(255,255,255,0.1); }
+    .tree-line { font-size: 13px; line-height: 1.8; opacity: 0.9; }
+    .tree-folder { color: #F59E0B; font-weight: 700; }
+    .tree-file { color: #93C5FD; }
+
+    .footer-info { position: absolute; bottom: 20px; right: 40px; font-size: 12px; color: #9CA3AF; z-index: 10; }
+    .nav-buttons { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 15px; z-index: 1000; }
+    .nav-btn { width: 50px; height: 50px; background-color: rgba(26, 58, 107, 0.9); color: white; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); }
+    .nav-btn:hover { background-color: rgba(26, 58, 107, 1); transform: scale(1.1); }
+    .slide-indicator { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background-color: rgba(0, 0, 0, 0.5); color: white; padding: 8px 20px; border-radius: 20px; font-size: 14px; z-index: 1000; }
+</style>
+</head>
+<body>
+<div class="slide-container">
+<div class="bg-pattern"></div>
+<div class="header-bar">
+    <h1 class="header-title">Architecture du Projet</h1>
+    <div class="header-accent"></div>
+</div>
+<div class="content-wrapper">
+    <!-- Architecture Flow -->
+    <div class="arch-flow">
+        <div class="arch-step step-collect">
+            <div class="arch-step-icon"><i class="fas fa-spider"></i></div>
+            <h3 class="arch-step-title">Collecte</h3>
+            <p class="arch-step-desc">Web scraping Voursa.com via API JSON (1 153 annonces)</p>
+        </div>
+        <div class="arch-arrow"><i class="fas fa-chevron-right"></i></div>
+        <div class="arch-step step-clean">
+            <div class="arch-step-icon"><i class="fas fa-broom"></i></div>
+            <h3 class="arch-step-title">Nettoyage</h3>
+            <p class="arch-step-desc">Imputation, déduplication, normalisation des textes</p>
+        </div>
+        <div class="arch-arrow"><i class="fas fa-chevron-right"></i></div>
+        <div class="arch-step step-eda">
+            <div class="arch-step-icon"><i class="fas fa-chart-bar"></i></div>
+            <h3 class="arch-step-title">EDA</h3>
+            <p class="arch-step-desc">Analyse exploratoire, visualisations, corrélations</p>
+        </div>
+        <div class="arch-arrow"><i class="fas fa-chevron-right"></i></div>
+        <div class="arch-step step-model">
+            <div class="arch-step-icon"><i class="fas fa-brain"></i></div>
+            <h3 class="arch-step-title">Modélisation</h3>
+            <p class="arch-step-desc">5 modèles testés, GridSearchCV, XGBoost retenu</p>
+        </div>
+        <div class="arch-arrow"><i class="fas fa-chevron-right"></i></div>
+        <div class="arch-step step-deploy">
+            <div class="arch-step-icon"><i class="fas fa-rocket"></i></div>
+            <h3 class="arch-step-title">Déploiement</h3>
+            <p class="arch-step-desc">Export joblib, rapport LaTeX, présentation HTML</p>
+        </div>
+    </div>
+
+    <!-- Bottom Section: Tech + Structure -->
+    <div class="tech-section">
+        <!-- Tech Stack -->
+        <div class="tech-card">
+            <h3 class="tech-title"><i class="fas fa-code"></i> Langages & Librairies</h3>
+            <div class="tech-grid">
+                <div class="tech-tag"><i class="fab fa-python"></i> Python 3.11</div>
+                <div class="tech-tag"><i class="fas fa-table"></i> Pandas</div>
+                <div class="tech-tag"><i class="fas fa-chart-area"></i> Matplotlib</div>
+                <div class="tech-tag"><i class="fas fa-chart-pie"></i> Seaborn</div>
+                <div class="tech-tag"><i class="fas fa-brain"></i> Scikit-learn</div>
+                <div class="tech-tag"><i class="fas fa-bolt"></i> XGBoost</div>
+                <div class="tech-tag"><i class="fas fa-spider"></i> Requests</div>
+                <div class="tech-tag"><i class="fas fa-map"></i> Geopy</div>
+                <div class="tech-tag"><i class="fas fa-book"></i> Jupyter</div>
+                <div class="tech-tag"><i class="fas fa-save"></i> Joblib</div>
+            </div>
+        </div>
+        <div class="tech-card">
+            <h3 class="tech-title"><i class="fas fa-database"></i> Sources de Données</h3>
+            <div class="tech-grid">
+                <div class="tech-tag"><i class="fas fa-globe"></i> Voursa.com</div>
+                <div class="tech-tag"><i class="fas fa-map-marker-alt"></i> Nominatim (OSM)</div>
+                <div class="tech-tag"><i class="fas fa-road"></i> Overpass API</div>
+            </div>
+            <h3 class="tech-title" style="margin-top: 15px;"><i class="fas fa-cogs"></i> Outils</h3>
+            <div class="tech-grid">
+                <div class="tech-tag"><i class="fab fa-git-alt"></i> Git / GitHub</div>
+                <div class="tech-tag"><i class="fas fa-file-pdf"></i> LaTeX</div>
+                <div class="tech-tag"><i class="fab fa-html5"></i> Présentation HTML</div>
+            </div>
+        </div>
+        <!-- Project Structure -->
+        <div class="structure-card">
+            <h3 class="tech-title"><i class="fas fa-folder-tree"></i> Structure du Projet</h3>
+            <div class="tree-line">
+                <span class="tree-folder">📁 immobilier-price-prediction/</span><br/>
+                ├── <span class="tree-folder">📁 data/</span> raw & processed<br/>
+                ├── <span class="tree-folder">📁 notebooks/</span><br/>
+                │&nbsp;&nbsp;&nbsp;├── <span class="tree-file">01_scraping.ipynb</span><br/>
+                │&nbsp;&nbsp;&nbsp;├── <span class="tree-file">02_geo_enrichment.ipynb</span><br/>
+                │&nbsp;&nbsp;&nbsp;├── <span class="tree-file">03_eda.ipynb</span><br/>
+                │&nbsp;&nbsp;&nbsp;└── <span class="tree-file">04_modeling.ipynb</span><br/>
+                ├── <span class="tree-folder">📁 models/</span> .joblib<br/>
+                ├── <span class="tree-folder">📁 rapport/</span> LaTeX<br/>
+                ├── <span class="tree-folder">📁 presentation/</span> HTML<br/>
+                └── <span class="tree-file">requirements.txt</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer-info">Architecture technique et organisation</div>
+<div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='slide7.html'" title="Précédent"><i class="fas fa-arrow-left"></i></button>
+    <button class="nav-btn" onclick="window.location.href='slide9.html'" title="Suivant"><i class="fas fa-arrow-right"></i></button>
+</div>
+<div class="slide-indicator">8 / 9</div>
+</div>
+<script>
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') window.location.href = 'slide9.html';
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') window.location.href = 'slide7.html';
+});
+</script>
+</body>
+</html>

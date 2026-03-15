@@ -1,0 +1,527 @@
+\documentclass[12pt, a4paper]{article}
+
+% ══════════════════════════════════════════════════
+%  PACKAGES
+% ══════════════════════════════════════════════════
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{parskip}
+
+% ══════════════════════════════════════════════════
+%  CONFIGURATION
+% ══════════════════════════════════════════════════
+\definecolor{supnum-blue}{RGB}{26, 58, 107}
+\definecolor{code-bg}{RGB}{245, 245, 245}
+\definecolor{accent}{RGB}{96, 165, 250}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=supnum-blue,
+    citecolor=supnum-blue,
+    urlcolor=accent,
+    pdftitle={Prédiction des Prix Immobiliers en Mauritanie},
+    pdfauthor={Bechir Mady}
+}
+
+\lstset{
+    backgroundcolor=\color{code-bg},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{gray!30},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{supnum-blue}\bfseries,
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{red!60!black},
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{supnum-blue}{Prédiction des Prix Immobiliers}}
+\fancyhead[R]{\small\textcolor{supnum-blue}{SupNum -- 2026}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\Large\bfseries\color{supnum-blue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\color{supnum-blue!80}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{supnum-blue!60}}{\thesubsubsection}{1em}{}
+
+\onehalfspacing
+
+% ══════════════════════════════════════════════════
+%  PAGE DE TITRE
+% ══════════════════════════════════════════════════
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+
+\vspace*{1cm}
+
+{\large\textsc{Institut Supérieur du Numérique (SupNum)}}\\[0.3cm]
+{\normalsize Master Data Engineering and Machine Learning}\\[0.3cm]
+{\normalsize Année Académique 2025--2026}
+
+\vspace{1.5cm}
+
+\rule{\textwidth}{1.5pt}\\[0.6cm]
+{\Huge\bfseries\textcolor{supnum-blue}{Prédiction des Prix\\[0.3cm] Immobiliers en Mauritanie}}\\[0.4cm]
+\rule{\textwidth}{1.5pt}
+
+\vspace{1cm}
+
+{\Large Projet Machine Learning}
+
+\vspace{2cm}
+
+\begin{minipage}{0.45\textwidth}
+\begin{flushleft}
+\textbf{Présenté par :}\\[0.2cm]
+{\large Bechir Mady}
+\end{flushleft}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\begin{flushright}
+\textbf{Encadré par :}\\[0.2cm]
+{\large M. Mohamed}
+\end{flushright}
+\end{minipage}
+
+\vfill
+
+{\large Mars 2026}
+
+\end{center}
+\end{titlepage}
+
+% ══════════════════════════════════════════════════
+%  TABLE DES MATIÈRES
+% ══════════════════════════════════════════════════
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════
+%  1. INTRODUCTION
+% ══════════════════════════════════════════════════
+\section{Introduction}
+
+\subsection{Contexte}
+
+Le marché immobilier en Mauritanie, et particulièrement à Nouakchott, connaît une croissance significative ces dernières années. Cependant, contrairement aux marchés immobiliers occidentaux, il reste caractérisé par une forte opacité des prix et un manque d'outils d'aide à la décision pour les acheteurs comme pour les vendeurs. Les estimations de prix reposent essentiellement sur l'expérience des agents immobiliers et le bouche-à-oreille, sans référentiel objectif ni données structurées accessibles au grand public.
+
+\subsection{Problématique}
+
+\textbf{Comment estimer de manière fiable le prix d'un bien immobilier à Nouakchott à partir de ses caractéristiques (surface, nombre de pièces, quartier, équipements) en utilisant des techniques de Machine Learning~?}
+
+Cette question soulève plusieurs défis spécifiques au contexte mauritanien~:
+\begin{itemize}
+    \item L'absence de bases de données immobilières publiques~;
+    \item La nécessité de collecter les données par web scraping~;
+    \item La diversité linguistique des annonces (français, arabe, mixte)~;
+    \item La forte hétérogénéité des prix selon les quartiers.
+\end{itemize}
+
+\subsection{Objectifs}
+
+Les objectifs de ce projet sont les suivants~:
+\begin{enumerate}
+    \item \textbf{Collecter} un jeu de données immobilières depuis les plateformes d'annonces mauritaniennes (Voursa.com)~;
+    \item \textbf{Enrichir} les données avec des informations géographiques (géocodage, distances, points d'intérêt)~;
+    \item \textbf{Analyser} les données à travers une EDA complète pour comprendre les déterminants des prix~;
+    \item \textbf{Construire et évaluer} plusieurs modèles de régression pour prédire le prix de vente~;
+    \item \textbf{Déployer} un pipeline reproductible de bout en bout.
+\end{enumerate}
+
+% ══════════════════════════════════════════════════
+%  2. DONNÉES
+% ══════════════════════════════════════════════════
+\section{Données}
+
+\subsection{Sources de données}
+
+Les données ont été collectées depuis la plateforme \textbf{Voursa.com}, le principal site d'annonces immobilières en Mauritanie. Plutôt qu'un parsing HTML classique, nous avons utilisé l'\textbf{API JSON interne} du site, ce qui garantit~:
+\begin{itemize}
+    \item Une extraction plus fiable et structurée des données~;
+    \item Une meilleure résilience face aux changements de design du site~;
+    \item L'accès aux détails techniques complets (chambres, salons, salles de bain).
+\end{itemize}
+
+Le scraping a été réalisé dans le respect des bonnes pratiques~: délai d'une seconde entre les requêtes, User-Agent personnalisé, et anonymisation automatique des numéros de téléphone dans les descriptions.
+
+\subsection{Volume et description du dataset}
+
+Le dataset final utilisé pour la modélisation contient \textbf{1\,153 annonces} immobilières avec \textbf{12 variables}. Le tableau~\ref{tab:variables} résume les principales variables.
+
+\begin{table}[H]
+\centering
+\caption{Description des variables du dataset}
+\label{tab:variables}
+\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{Variable} & \textbf{Type} & \textbf{Description} \\
+\midrule
+\texttt{id} & int & Identifiant unique \\
+\texttt{titre} & str & Titre de l'annonce (français / arabe) \\
+\texttt{prix} & num & \textbf{Variable cible} -- Prix en MRU \\
+\texttt{surface\_m2} & num & Surface en mètres carrés \\
+\texttt{nb\_chambres} & num & Nombre de chambres \\
+\texttt{nb\_salons} & num & Nombre de salons \\
+\texttt{nb\_sdb} & num & Nombre de salles de bain \\
+\texttt{quartier} & cat & Quartier (8 quartiers de Nouakchott) \\
+\texttt{description} & str & Description textuelle du bien \\
+\texttt{caracteristiques} & str & Équipements séparés par \texttt{|} \\
+\texttt{source} & cat & Source de l'annonce \\
+\texttt{date\_publication} & date & Date de publication \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Enrichissement géographique}
+
+En Phase~2, les données ont été enrichies avec des informations géographiques via les API \textbf{Nominatim} (géocodage) et \textbf{Overpass} (points d'intérêt)~:
+\begin{itemize}
+    \item Coordonnées GPS (latitude, longitude) par quartier~;
+    \item Distances au centre-ville (Ksar), à l'aéroport Oumtounsy, et à la plage~;
+    \item Nombre de POI dans un rayon de 1\,km~: écoles, mosquées, commerces, hôpitaux.
+\end{itemize}
+
+\subsection{Difficultés rencontrées}
+
+\begin{itemize}
+    \item \textbf{Valeurs manquantes}~: la variable \texttt{nb\_sdb} présente 72\,\% de valeurs manquantes (mécanisme MAR -- lié au type de bien), tandis que \texttt{nb\_chambres} en a seulement 1,2\,\% (MCAR)~;
+    \item \textbf{Bilinguisme}~: les annonces mélangent français et arabe, nécessitant des regex spécifiques pour l'extraction de features~;
+    \item \textbf{Rate limiting}~: les API de géocodage limitent à 1 requête/seconde, rendant l'enrichissement de 1\,000+ annonces très long~;
+    \item \textbf{Hétérogénéité des prix}~: les prix varient de 200\,000 à 54\,000\,000~MRU, avec un coefficient de variation très élevé.
+\end{itemize}
+
+% ══════════════════════════════════════════════════
+%  3. ANALYSE EXPLORATOIRE DES DONNÉES (EDA)
+% ══════════════════════════════════════════════════
+\section{Analyse Exploratoire des Données (EDA)}
+
+L'EDA a été conduite en suivant une méthodologie rigoureuse en 7~étapes~: inspection initiale, nettoyage, traitement des valeurs manquantes, détection d'outliers, analyse univariée, bivariée et multivariée.
+
+\subsection{Statistiques descriptives de la variable cible}
+
+Le prix (\texttt{prix}), exprimé en MRU (Ouguiya mauritanien), présente les caractéristiques suivantes~:
+
+\begin{table}[H]
+\centering
+\caption{Statistiques descriptives du prix (MRU)}
+\label{tab:prix_stats}
+\begin{tabular}{lr}
+\toprule
+\textbf{Statistique} & \textbf{Valeur} \\
+\midrule
+Moyenne & 4\,339\,931 \\
+Écart-type & 5\,451\,494 \\
+Minimum & 200\,000 \\
+1\textsuperscript{er} quartile (Q1) & 1\,300\,000 \\
+Médiane (Q2) & 2\,600\,000 \\
+3\textsuperscript{e} quartile (Q3) & 5\,800\,000 \\
+Maximum & 54\,000\,000 \\
+Asymétrie (\textit{skewness}) & 4,114 \\
+Aplatissement (\textit{kurtosis}) & 24,060 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La distribution du prix est \textbf{fortement asymétrique à droite} (skewness $= 4,11$). Le test de Shapiro-Wilk confirme la non-normalité ($p < 0,001$). La transformation $\log(1 + \text{prix})$ normalise la distribution (skewness réduit à $0,04$), ce qui justifie la prédiction de $\log(\text{prix})$ plutôt que du prix brut.
+
+\subsection{Principales découvertes}
+
+\subsubsection{Répartition par quartier}
+
+Les 8 quartiers de Nouakchott présentent des distributions de prix très différentes~:
+
+\begin{table}[H]
+\centering
+\caption{Prix médian par quartier}
+\label{tab:prix_quartier}
+\begin{tabular}{lr}
+\toprule
+\textbf{Quartier} & \textbf{Prix médian (MRU)} \\
+\midrule
+Tevragh Zeina & 6\,500\,000 \\
+Sebkha & 3\,850\,000 \\
+Ksar & 2\,900\,000 \\
+Teyarett & 2\,900\,000 \\
+Dar Naim & 1\,700\,000 \\
+Arafat & 1\,300\,000 \\
+Toujounine & 1\,100\,000 \\
+Riyad & 850\,000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Tevragh Zeina}, le quartier le plus huppé de Nouakchott, affiche un prix médian \textbf{7,6 fois supérieur} à celui de Riyad. Le test ANOVA confirme cette différence hautement significative ($F = 97,76$, $p < 10^{-70}$).
+
+\subsubsection{Corrélations avec le prix}
+
+Les corrélations de Pearson révèlent les relations suivantes~:
+
+\begin{table}[H]
+\centering
+\caption{Principales corrélations avec le prix}
+\label{tab:correlations}
+\begin{tabular}{lr}
+\toprule
+\textbf{Variable} & \textbf{Corrélation (Pearson)} \\
+\midrule
+\texttt{surface\_m2} & $+0,615$ \\
+\texttt{nb\_chambres} & $+0,313$ \\
+\texttt{nb\_salons} & $+0,268$ \\
+\texttt{taille\_rue} & $+0,184$ \\
+\texttt{nb\_balcons} & $+0,171$ \\
+\texttt{has\_camera} & $+0,156$ \\
+\texttt{nb\_sdb} & $+0,031$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La \textbf{surface} est le prédicteur le plus fort du prix ($r = 0,615$), suivie du nombre de chambres et de salons. Les caractéristiques booléennes (garage, caméra de sécurité) ont un effet plus modéré.
+
+\subsubsection{Détection des outliers}
+
+La méthode IQR identifie 54 outliers sur le prix et 93 sur la surface. Cependant, dans le contexte mauritanien, les prix élevés ($> 10$\,M MRU) correspondent à des villas de luxe à Tevragh Zeina et sont donc \textbf{plausibles}. Seuls 11 outliers extrêmes (1\,\% du dataset) ont été supprimés avant la modélisation.
+
+\subsubsection{Caractéristiques des biens}
+
+L'extraction depuis la colonne \texttt{caracteristiques} révèle~:
+\begin{itemize}
+    \item 69\,\% des biens possèdent un balcon~;
+    \item 41,6\,\% disposent d'un titre foncier~;
+    \item 40,9\,\% ont un garage~;
+    \item 8,4\,\% sont équipés de caméras de surveillance~;
+    \item 5,9\,\% sont vendus meublés.
+\end{itemize}
+
+% ══════════════════════════════════════════════════
+%  4. MODÉLISATION
+% ══════════════════════════════════════════════════
+\section{Modélisation}
+
+\subsection{Feature Engineering}
+
+À partir des 12 variables initiales, un pipeline de Feature Engineering complet a généré \textbf{63 features} organisées en plusieurs catégories~:
+
+\begin{itemize}
+    \item \textbf{Numériques brutes}~: \texttt{surface\_m2}, \texttt{nb\_chambres}, \texttt{nb\_salons}, \texttt{nb\_sdb}~;
+    \item \textbf{Extraites de \texttt{caracteristiques}}~: \texttt{taille\_rue}, \texttt{nb\_balcons}, 10 indicateurs booléens (garage, piscine, climatisation, etc.), score de standing~;
+    \item \textbf{Ratios et interactions}~: \texttt{surface\_per\_piece}, \texttt{surface\_x\_chambres}, \texttt{surface\_x\_quartier}~;
+    \item \textbf{Transformations non-linéaires}~: $\log(\text{surface})$, $\text{surface}^2$, $\sqrt{\text{surface}}$~;
+    \item \textbf{Target Encoding}~: prix médian et moyen par quartier (en échelle log pour stabilité)~;
+    \item \textbf{Features textuelles}~: longueur du titre/description, détection de mots-clés (\textit{luxe}, \textit{neuf})~;
+    \item \textbf{Features temporelles}~: âge de l'annonce, mois et trimestre de publication.
+\end{itemize}
+
+La variable cible a été transformée en $y = \log(1 + \text{prix})$ pour normaliser sa distribution (skewness réduit de 4,11 à 0,04).
+
+\subsection{Protocole expérimental}
+
+\begin{itemize}
+    \item \textbf{Split}~: 80\,\% train (913 observations) / 20\,\% test (229 observations)~;
+    \item \textbf{Normalisation}~: StandardScaler (fit sur le train uniquement pour éviter le \textit{data leakage})~;
+    \item \textbf{Validation}~: K-Fold croisée à 5 plis~;
+    \item \textbf{Optimisation}~: RandomizedSearchCV pour les hyperparamètres des modèles de boosting.
+\end{itemize}
+
+\subsection{Modèles testés}
+
+Sept modèles de base ont été évalués, auxquels s'ajoutent 4 versions optimisées et 2 ensembles~:
+
+\begin{table}[H]
+\centering
+\caption{Résultats de la validation croisée 5-fold ($R^2$ sur $\log(\text{prix})$)}
+\label{tab:cv_results}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Modèle} & \textbf{$R^2$ (CV)} & \textbf{RMSE (CV)} \\
+\midrule
+Linear Regression & 0,4729 $\pm$ 0,0823 & 0,7051 \\
+Ridge ($\alpha = 10$) & 0,5249 $\pm$ 0,0856 & 0,6681 \\
+Lasso ($\alpha = 0,001$) & 0,5094 $\pm$ 0,0843 & 0,6799 \\
+Random Forest & 0,5432 $\pm$ 0,0810 & 0,6554 \\
+Gradient Boosting & 0,5295 $\pm$ 0,0765 & 0,6652 \\
+XGBoost & 0,5252 $\pm$ 0,0869 & 0,6675 \\
+LightGBM & 0,5109 $\pm$ 0,0882 & 0,6777 \\
+\midrule
+\textit{Gradient Boosting (tuné)} & \textit{0,5519} & --- \\
+\textit{Voting Ensemble} & \textit{0,5538} & \textit{0,6474} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Résultats sur le jeu de test}
+
+Le meilleur modèle retenu est le \textbf{Random Forest (tuné)} avec les hyperparamètres suivants~: 500 arbres, profondeur max 8, \texttt{min\_samples\_leaf} = 5, \texttt{max\_features} = 0,4.
+
+\begin{table}[H]
+\centering
+\caption{Performance du meilleur modèle sur le jeu de test}
+\label{tab:test_results}
+\begin{tabular}{lr}
+\toprule
+\textbf{Métrique} & \textbf{Valeur} \\
+\midrule
+$R^2$ (prix réel) & 0,3068 \\
+RMSE & 4\,265\,671 MRU \\
+MAE & 1\,738\,479 MRU \\
+Erreur relative médiane & 27,9\,\% \\
+Prédictions à $< 30\,\%$ d'erreur & 55,0\,\% \\
+Prédictions à $< 50\,\%$ d'erreur & 74,7\,\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Interprétation -- Feature Importance}
+
+L'analyse de l'importance des features du Random Forest révèle que les \textbf{interactions entre la surface et le quartier} dominent largement la prédiction~:
+
+\begin{table}[H]
+\centering
+\caption{Top 10 des features les plus importantes}
+\label{tab:feature_importance}
+\begin{tabular}{lr}
+\toprule
+\textbf{Feature} & \textbf{Importance (\%)} \\
+\midrule
+\texttt{log\_surface\_x\_quartier} & 27,5 \\
+\texttt{surface\_x\_quartier} & 12,7 \\
+\texttt{quartier\_log\_median} & 3,8 \\
+\texttt{quartier\_log\_mean} & 3,4 \\
+\texttt{quartier\_prix\_median} & 3,3 \\
+\texttt{log\_surface} & 3,3 \\
+\texttt{surface\_x\_chambres} & 2,9 \\
+\texttt{sqrt\_surface} & 2,7 \\
+\texttt{surface\_m2} & 2,4 \\
+\texttt{surface\_per\_etage} & 2,4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ce résultat confirme l'intuition métier~: le prix d'un bien immobilier à Nouakchott est principalement déterminé par \textbf{la combinaison de sa taille et de son emplacement}. Le quartier seul explique une part importante de la variance, ce qui est cohérent avec les écarts de prix considérables observés (rapport de 1 à 7,6 entre Riyad et Tevragh Zeina).
+
+% ══════════════════════════════════════════════════
+%  5. APPLICATION
+% ══════════════════════════════════════════════════
+\section{Application}
+
+\subsection{Architecture du pipeline}
+
+Le projet suit une architecture modulaire en 4 phases, chacune correspondant à un notebook Jupyter~:
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.9\textwidth}{
+\centering
+\vspace{0.5cm}
+\textbf{Phase 1 : Scraping} (\texttt{01\_scraping.ipynb})\\
+Collecte via API JSON $\rightarrow$ \texttt{raw\_data.csv}\\[0.4cm]
+$\downarrow$\\[0.4cm]
+\textbf{Phase 2 : Enrichissement Géo} (\texttt{02\_geo\_enrichment.ipynb})\\
+Géocodage + Distances + POI $\rightarrow$ \texttt{enriched\_data.csv}\\[0.4cm]
+$\downarrow$\\[0.4cm]
+\textbf{Phase 3 : EDA} (\texttt{03\_eda.ipynb})\\
+Nettoyage + Analyse exploratoire + Visualisations\\[0.4cm]
+$\downarrow$\\[0.4cm]
+\textbf{Phase 4 : Modélisation} (\texttt{04\_modeling.ipynb})\\
+Feature Engineering + Entraînement + Évaluation\\[0.2cm]
+$\downarrow$ \texttt{best\_model.pkl} + \texttt{scaler.pkl}\\[0.2cm]
+$\downarrow$ \texttt{submission.csv}
+\vspace{0.5cm}
+}}
+\caption{Architecture du pipeline de bout en bout}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Structure du projet}
+
+\begin{lstlisting}[language=bash, caption=Arborescence du projet]
+immobilier-price-prediction/
+|-- data/
+|   |-- raw/           # Donnees brutes (CSV)
+|   |-- processed/     # Donnees enrichies
+|   |-- submission.csv # Predictions Kaggle
+|-- model/
+|   |-- best_model.pkl    # Modele sauvegarde
+|   |-- scaler.pkl        # StandardScaler
+|   |-- feature_names.pkl # Noms des features
+|   |-- train_params.pkl  # Parametres d'entrainement
+|-- notebooks/         # 4 notebooks Jupyter
+|-- src/
+|   |-- scraping/      # Modules de scraping
+|   |-- geo/           # Modules d'enrichissement geo
+|-- requirements.txt
+\end{lstlisting}
+
+\subsection{Reproductibilité}
+
+Le pipeline est entièrement reproductible~:
+\begin{itemize}
+    \item La fonction \texttt{build\_features()} est réutilisable sur le train et le test, avec passage des statistiques du train (médianes, target encoding) pour éviter le \textit{data leakage}~;
+    \item Le modèle, le scaler et les noms de features sont sauvegardés via \texttt{joblib} pour un déploiement futur~;
+    \item Le fichier \texttt{requirements.txt} fige les dépendances (scikit-learn, XGBoost, LightGBM, pandas, etc.).
+\end{itemize}
+
+\subsection{Soumission Kaggle}
+
+Le modèle final a été utilisé pour générer des prédictions sur un jeu de test Kaggle de 289 observations. Les prédictions présentent une distribution cohérente avec les données d'entraînement~:
+\begin{itemize}
+    \item Prix moyen prédit~: 3\,332\,728~MRU~;
+    \item Prix médian prédit~: 2\,593\,339~MRU~;
+    \item Plage~: 777\,207 à 14\,894\,103~MRU.
+\end{itemize}
+
+% ══════════════════════════════════════════════════
+%  6. CONCLUSION
+% ══════════════════════════════════════════════════
+\section{Conclusion}
+
+\subsection{Synthèse}
+
+Ce projet a permis de construire un pipeline complet de prédiction des prix immobiliers en Mauritanie, depuis la collecte de données par web scraping jusqu'à la génération de prédictions. L'EDA a révélé que le prix est principalement déterminé par la surface du bien et son quartier, avec Tevragh Zeina comme zone la plus chère. Le meilleur modèle (Random Forest tuné) atteint un $R^2 = 0,31$ sur le jeu de test, avec 55\,\% des prédictions à moins de 30\,\% d'erreur.
+
+\subsection{Limites}
+
+\begin{enumerate}
+    \item \textbf{Taille du dataset}~: avec 1\,153 observations, le dataset reste modeste pour un problème de régression avec 63 features. Le risque de surapprentissage est élevé, comme le montre l'écart entre les $R^2$ train et test~;
+    \item \textbf{$R^2$ modéré}~: le coefficient de détermination de 0,31 indique que 69\,\% de la variance des prix reste inexpliquée, suggérant que des facteurs importants ne sont pas capturés (état du bien, étage exact, vue, négociation)~;
+    \item \textbf{Source unique}~: les données proviennent exclusivement de Voursa.com, ce qui peut introduire un biais de sélection~;
+    \item \textbf{Pas de variable ``type de bien''}~: la distinction entre appartement, villa et terrain n'est pas explicitement codée dans les données brutes~;
+    \item \textbf{Données textuelles sous-exploitées}~: les descriptions en arabe et en français contiennent probablement des informations utiles non extraites.
+\end{enumerate}
+
+\subsection{Améliorations futures}
+
+\begin{enumerate}
+    \item \textbf{Augmenter le volume de données}~: scraper davantage de sources (Mauriannonces, Rimmo, etc.) et collecter en continu~;
+    \item \textbf{NLP avancé}~: utiliser des modèles de traitement du langage naturel (arabert, CamemBERT) pour extraire des features sémantiques des descriptions~;
+    \item \textbf{Données géographiques}~: intégrer les coordonnées GPS et les distances aux points d'intérêt dans le modèle de prédiction~;
+    \item \textbf{Deep Learning}~: tester des architectures neuronales (TabNet, réseaux de neurones tabulaires) avec davantage de données~;
+    \item \textbf{Application web}~: déployer le modèle via une interface Streamlit ou Flask permettant aux utilisateurs d'estimer le prix d'un bien en temps réel~;
+    \item \textbf{Analyse temporelle}~: étudier l'évolution des prix dans le temps pour détecter des tendances et ajuster les prédictions.
+\end{enumerate}
+
+\end{document}
