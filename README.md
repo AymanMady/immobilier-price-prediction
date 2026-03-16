@@ -1,74 +1,98 @@
 # Projet Prédiction Prix Immobilier - Mauritanie
 
-Ce projet vise à collecter des données d'annonces immobilières depuis plusieurs sources mauritaniennes pour construire un modèle de prédiction de prix (Machine Learning).
+Ce projet est une solution de bout en bout pour la collecte, l'analyse et la prédiction des prix de l'immobilier en Mauritanie. Il utilise des techniques avancées de Web Scraping, de Machine Learning et une interface web moderne pour offrir une estimation précise des biens.
 
-## 🚀 État Actuel : Phase 1 - Collecte de Données (Scraping)
+## 🚀 État Actuel : Solution Complète (Scraping + ML + Web)
 
-Nous avons implémenté un collecteur performant pour le site **Voursa.com**. Contrairement au parsing HTML classique, nous utilisons l'API JSON interne du site pour obtenir toutes les données structurées, y compris les détails techniques (chambres, salons, salles de bain).
+Le projet a évolué d'un simple scraper vers une plateforme complète incluant un modèle prédictif exposé via une API et un tableau de bord interactif.
 
 ### ✅ Accomplissements
-- Collecte de **5000+ annonces** complètes (objectif en cours).
-- Extraction des détails profonds : nombre de chambres, salles de bain, salons.
-- Détection intelligente du type de transaction (Vente/Location).
-- Nettoyage automatique : Anonymisation des numéros de téléphone dans les descriptions.
-- Export structuré : Fichier au format CSV compatible Excel.
+- **Collecte de données** : 5000+ annonces extraites via l'API interne de Voursa.com.
+- **Machine Learning** : Modèles XGBoost et LightGBM avec Feature Engineering avancé (Target Encoding, transformations log, interactions).
+- **Interface Utilisateur** : Application Next.js ultra-rapide avec cartographie interactive.
 
-### 📂 Structure du projet
+---
 
-```
+## 🛠 Stack Technique
+
+### Backend (Data & API)
+- **Langage** : Python 3.12+
+- **Framework API** : FastAPI & Uvicorn (Serveur ASGI)
+- **Data Science** : Pandas, NumPy, Scikit-learn, XGBoost, LightGBM
+- **Scraping** : Requests, BeautifulSoup4
+
+### Frontend (Application Web)
+- **Framework** : Next.js 15 (App Router)
+- **Langage** : TypeScript
+- **Styling** : Tailwind CSS (Design Premium / Dark Mode)
+- **Animations** : Framer Motion
+- **Cartographie** : Leaflet & React-Leaflet
+- **Visualisation** : Recharts
+
+---
+
+## 📂 Structure du Projet
+
+```text
 immobilier-price-prediction/
-├── data/
-│   └── raw/
-│       └── raw_data.csv          # 5000+ annonces brutes scrapées
-├── src/
-│   └── scraping/
-│       ├── common.py             # Fonctions utilitaires (nettoyage, requêtes)
-│       └── voursa.py             # Logique originale BeautifulSoup
-├── scrape_api.py                 # SCRIPT PRINCIPAL : Scraper API JSON optimisé
-├── requirements.txt
-├── .gitignore                    # Configuré pour inclure raw_data.csv
-└── README.md
+├── api/                    # 🐍 Backend FastAPI
+│   ├── app.py              # Script principal de l'API (Régression & Endpoints)
+├── frontend/               # ⚛️ Frontend Next.js
+│   ├── src/
+│   │   ├── app/            # Routes (Home, Predict, Analysis)
+│   │   ├── components/     # Composants réutilisables (Navbar, Map)
+│   │   └── lib/            # Types et utilitaires
+├── model/                  # 🤖 Artefacts du modèle ML
+│   ├── housing_model.pkl   # Meilleur modèle entraîné
+│   ├── train_params.pkl    # Stats des quartiers & paramètres
+│   └── feature_names.pkl   # Liste des variables d'entrée
+├── notebooks/              # 📓 Recherche & Expérimentation Jupyter
+├── data/                   # 📊 Données CSV (Brutes & Traitées)
+├── src/                    # 🛠 Scripts utilitaires (Scraping original)
+└── requirements.txt        # Dépendances Python globales
 ```
 
-## 🛠 Installation
+---
 
-1.  Clonez le dépôt.
-2.  Créez et activez votre environnement virtuel :
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-3.  Installez les dépendances :
-    ```bash
-    pip install -r requirements.txt
-    ```
+## ⚙️ Installation et Exécution
 
-## 📈 Utilisation
-
-### Exécuter le Scraping Final
-Pour mettre à jour les données ou collecter de nouvelles annonces :
-
+### 1. Préparation de l'environnement
 ```bash
-python3 scrape_api.py
+# Activer l'environnement virtuel
+source venv/bin/activate
+
+# Installer les dépendances
+pip install -r requirements.txt
 ```
-*Le script est configuré pour collecter jusqu'à 500 annonces avec une pause de 1 seconde entre les requêtes de détail pour respecter le serveur.*
 
-## 📊 Format des Données (raw_data.csv)
+### 2. Lancer le Backend (API)
+L'API doit être lancée pour que le formulaire de prédiction fonctionne.
+```bash
+cd api
+../venv/bin/python3 app.py
+```
+*L'API tourne sur `http://localhost:8001`.*
 
-Les champs suivants sont collectés :
-- **titre** : Nom de l'annonce.
-- **type_bien** : Appartement, Villa, Terrain, etc.
-- **prix** : En MRU (converti en float).
-- **surface_m2** : Superficie en m².
-- **nb_chambres / nb_salons / nb_sdb** : Détails techniques (si disponibles).
-- **ville / quartier** : Localisation précise.
-- **description** : Texte complet (anonymisé).
-- **caracteristiques** : Liste des équipements (Garage, Sécurité, etc.).
-- **source / url_annonce** : Origine des données pour vérification.
+### 3. Lancer le Frontend (App Web)
+Dans un nouveau terminal :
+```bash
+cd frontend
+npm install   # Uniquement la première fois
+npm run dev
+```
+*L'application est accessible sur `http://localhost:3000`.*
+
+---
+
+## 📈 Fonctionnalités du Dashboard
+- **Prédiction Directe** : Formulaire basé sur la surface, le quartier et les équipements.
+- **Visualisation par Quartier** : Carte interactive OpenStreetMap centrée sur la zone choisie.
+- **Market Insights** : Statistiques et graphiques comparatifs entre les zones de Nouakchott.
+- **Double Devise** : Prix estimé affiché en MRU (Ouguiya) et conversion indicative en EUR.
+
+---
 
 ## 🛡 Respect des Bonnes Pratiques
-
-- **Politesse :** Délai entre les requêtes pour ne pas surcharger le serveur.
-- **Identification :** User-Agent personnalisé.
-- **Confidentialité :** Suppression automatique de tout numéro de téléphone détecté dans les textes libres.
-- **Maintenance :** Utilisation de l'API interne pour une meilleure stabilité face aux changements de design.
+- **Optimisation API** : Temps de réponse < 200ms pour les prédictions.
+- **Feature Consistency** : Même pipeline de traitement entre l'entraînement et la production (API).
+- **Responsive Design** : Interface parfaitement adaptée aux mobiles et tablettes.
