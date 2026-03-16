@@ -375,7 +375,7 @@ LightGBM & 0,5109 $\pm$ 0,0882 & 0,6777 \\
 
 \subsection{Résultats sur le jeu de test}
 
-Le meilleur modèle retenu est le \textbf{Random Forest (tuné)} avec les hyperparamètres suivants~: 500 arbres, profondeur max 8, \texttt{min\_samples\_leaf} = 5, \texttt{max\_features} = 0,4.
+Le meilleur modèle retenu est le \textbf{Gradient Boosting (tuné)} avec les hyperparamètres suivants~: 200 arbres, profondeur max 3, \texttt{learning\_rate} = 0,03, \texttt{subsample} = 0,8, \texttt{min\_samples\_split} = 15, \texttt{min\_samples\_leaf} = 5, \texttt{max\_features} = 0,6.
 
 \begin{table}[H]
 \centering
@@ -385,12 +385,12 @@ Le meilleur modèle retenu est le \textbf{Random Forest (tuné)} avec les hyperp
 \toprule
 \textbf{Métrique} & \textbf{Valeur} \\
 \midrule
-$R^2$ (prix réel) & 0,3068 \\
-RMSE & 4\,265\,671 MRU \\
-MAE & 1\,738\,479 MRU \\
-Erreur relative médiane & 27,9\,\% \\
-Prédictions à $< 30\,\%$ d'erreur & 55,0\,\% \\
-Prédictions à $< 50\,\%$ d'erreur & 74,7\,\% \\
+$R^2$ (prix réel) & 0,3045 \\
+RMSE & 4\,272\,686 MRU \\
+MAE & 1\,727\,813 MRU \\
+Erreur relative médiane & 28,4\,\% \\
+Prédictions à $< 30\,\%$ d'erreur & 52,4\,\% \\
+Prédictions à $< 50\,\%$ d'erreur & 74,2\,\% \\
 \bottomrule
 \end{tabular}
 \end{table}
